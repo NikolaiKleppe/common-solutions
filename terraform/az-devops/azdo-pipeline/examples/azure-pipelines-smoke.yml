@@ -1,0 +1,29 @@
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+# Set this variable in the pipeline UI or a variable group.
+# It must match the service connection created by this module.
+variables:
+  azureServiceConnection: sc-arm-wif-platform
+
+steps:
+  - checkout: none
+
+  - task: AzureCLI@2
+    displayName: Smoke test ARM service connection
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: bash
+      scriptLocation: inlineScript
+      addSpnToEnvironment: true
+      inlineScript: |
+        set -euo pipefail
+
+        echo "Verifying Azure login context"
+        az account show --output table
+
+        echo "Listing first resource groups"
+        az group list --query "[].name" -o tsv | head -n 10
