@@ -109,7 +109,6 @@ jobs:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
       terraform_version: ${{ inputs.terraform_version }}
       tfvars_file: ${{ inputs.tfvars_file }}
-      apply_environment_name: ${{ inputs.apply_environment_name }}
       azure_subscription_id: ${{ inputs.azure_subscription_id }}
       backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
       backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
@@ -132,6 +131,7 @@ jobs:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
       terraform_version: ${{ inputs.terraform_version }}
       tfvars_file: ${{ inputs.tfvars_file }}
+      apply_environment_name: ${{ inputs.apply_environment_name }}
       azure_subscription_id: ${{ inputs.azure_subscription_id }}
       backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
       backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
