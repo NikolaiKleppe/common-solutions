@@ -36,6 +36,7 @@ inputs:
     description: Azure subscription ID hosting Terraform state storage (optional)
     required: false
     default: ""
+    
   backend_container_name:
     description: Azure blob container name for Terraform state storage
     required: true
