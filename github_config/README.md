@@ -22,10 +22,10 @@ $env:GITHUB_TOKEN = "<token-with-repo-and-actions-admin-permissions>"
 ```hcl
 github_owner            = "your-org"
 repository_name         = "common-solutions"
-azure_client_id         = "00000000-0000-0000-0000-000000000000"
 azure_tenant_id         = "11111111-1111-1111-1111-111111111111"
 azure_subscription_id   = "22222222-2222-2222-2222-222222222222"
 tfstate_subscription_id = "33333333-3333-3333-3333-333333333333"
+service_principal_display_name = "common-solutions-github-config-sp"
 ```
 
 For management group-only auth, set `azure_subscription_id = ""`.

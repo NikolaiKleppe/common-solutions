@@ -8,12 +8,6 @@ variable "repository_name" {
   type        = string
 }
 
-variable "azure_client_id" {
-  description = "Value for the AZURE_CLIENT_ID GitHub Actions secret."
-  type        = string
-  sensitive   = true
-}
-
 variable "azure_tenant_id" {
   description = "Value for the AZURE_TENANT_ID GitHub Actions secret."
   type        = string
@@ -28,5 +22,10 @@ variable "azure_subscription_id" {
 
 variable "tfstate_subscription_id" {
   description = "Value for the TFSTATE_SUBSCRIPTION_ID GitHub Actions variable used by backend configuration."
+  type        = string
+}
+
+variable "service_principal_display_name" {
+  description = "Display name for the Azure AD service principal that will be created."
   type        = string
 }
