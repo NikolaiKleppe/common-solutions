@@ -51,6 +51,12 @@ on:
         required: true
         type: string
 
+      apply_environment_name:
+        description: GitHub Environment name used to gate Terraform apply
+        required: false
+        default: terraform-apply
+        type: string
+
     secrets:
       azure_client_id:
         description: Azure application or managed identity client ID
@@ -64,6 +70,7 @@ jobs:
   apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
+    environment: ${{ inputs.apply_environment_name }}
     permissions:
       contents: read
       id-token: write

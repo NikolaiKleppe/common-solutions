@@ -51,6 +51,12 @@ on:
         required: true
         type: string
 
+      apply_environment_name:
+        description: GitHub Environment name used to gate Terraform apply
+        required: false
+        default: terraform-apply
+        type: string
+
       run_apply:
         description: Run Terraform apply when true
         required: false
@@ -117,6 +123,7 @@ jobs:
     name: Apply Component
     needs: plan
     if: ${{ inputs.run_apply }}
+    environment: ${{ inputs.apply_environment_name }}
     permissions:
       contents: read
       id-token: write

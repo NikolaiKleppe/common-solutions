@@ -29,3 +29,9 @@ variable "service_principal_display_name" {
   description = "Display name for the Azure AD service principal that will be created."
   type        = string
 }
+
+variable "apply_environment_name" {
+  description = "GitHub Actions environment name used to gate Terraform apply."
+  type        = string
+  default     = "terraform-apply"
+}
