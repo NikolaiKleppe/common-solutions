@@ -15,7 +15,8 @@ resource "azuread_application_flexible_federated_identity_credential" "gh_action
 	display_name   = "github-actions-all-branches"
   audience       = "api://AzureADTokenExchange"
   issuer         = "https://token.actions.githubusercontent.com"
-  claims_matching_expression = "claims['sub'] matches 'repo:${var.github_owner}/${var.repository_name}:ref:refs/heads/*'"
+  # claims_matching_expression = "claims['sub'] matches 'repo:${var.github_owner}/${var.repository_name}:ref:refs/heads/*'"
+  claims_matching_expression = "claims['sub'] matches 'repo:${var.github_owner}/${var.repository_name}:*'" # NOTE: This is a workaround to allow all branches AND environments to authenticate.
 }
 
 # Assign Contributor role to service principal on the subscription
