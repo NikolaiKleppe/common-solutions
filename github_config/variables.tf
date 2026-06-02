@@ -21,10 +21,9 @@ variable "azure_tenant_id" {
 }
 
 variable "azure_subscription_id" {
-  description = "Optional value for the AZURE_SUBSCRIPTION_ID GitHub Actions secret. Leave empty for management group-only authentication."
+  description = "Optional value for the AZURE_SUBSCRIPTION_ID GitHub Actions variable. Leave empty for management group-only authentication."
   type        = string
   default     = ""
-  sensitive   = true
 }
 
 variable "tfstate_subscription_id" {

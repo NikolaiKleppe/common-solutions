@@ -6,7 +6,7 @@ This Terraform stack configures the GitHub Actions repository secrets and variab
 
 - Secret `AZURE_CLIENT_ID`
 - Secret `AZURE_TENANT_ID`
-- Secret `AZURE_SUBSCRIPTION_ID` (optional, only when provided)
+- Variable `AZURE_SUBSCRIPTION_ID` (optional, only when provided)
 - Variable `TFSTATE_SUBSCRIPTION_ID`
 
 ## Required environment variable

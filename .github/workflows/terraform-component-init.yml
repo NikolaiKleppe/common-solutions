@@ -12,6 +12,11 @@ on:
         required: false
         default: "1.5.7"
         type: string
+      azure_subscription_id:
+        description: Azure subscription ID for OIDC login (optional)
+        required: false
+        default: ""
+        type: string
       backend_resource_group_name:
         description: Azure resource group name for Terraform state storage
         required: true
@@ -40,9 +45,6 @@ on:
       azure_tenant_id:
         description: Azure tenant ID
         required: true
-      azure_subscription_id:
-        description: Azure subscription ID (optional for management group deployments)
-        required: false
 
 jobs:
   init:
@@ -59,7 +61,7 @@ jobs:
           terraform_version: ${{ inputs.terraform_version }}
           azure_client_id: ${{ secrets.azure_client_id }}
           azure_tenant_id: ${{ secrets.azure_tenant_id }}
-          azure_subscription_id: ${{ secrets.azure_subscription_id }}
+          azure_subscription_id: ${{ inputs.azure_subscription_id }}
           backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
           backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
           backend_subscription_id: ${{ inputs.backend_subscription_id }}

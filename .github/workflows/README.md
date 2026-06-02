@@ -19,7 +19,6 @@ Consumer repositories must provide the following reusable workflow secrets:
 
 - `azure_client_id`
 - `azure_tenant_id`
-- `azure_subscription_id` (optional for management group deployments)
 
 The Azure identity behind `azure_client_id` must have a federated credential for GitHub Actions and sufficient RBAC permissions at the target scope.
 
@@ -37,6 +36,7 @@ Optional inputs:
 
 - `terraform_version` (default: `1.5.7`)
 - `tfvars_file` (default: empty)
+- `azure_subscription_id` (default: empty)
 - `backend_subscription_id` (default: empty)
 - `run_apply` (default: `false`)
 
@@ -59,7 +59,8 @@ If `backend_subscription_id` is provided, init also includes:
 
 Management group deployments are supported.
 
-- For management group-only authentication, omit `azure_subscription_id` and OIDC login will use `allow-no-subscriptions: true`.
+- For management group-only authentication, omit `azure_subscription_id` input and OIDC login will use `allow-no-subscriptions: true`.
+- For subscription-scoped authentication, pass `azure_subscription_id` as a workflow input (for example from repository variable `AZURE_SUBSCRIPTION_ID`).
 - If your Terraform backend storage account is in a specific subscription, set `backend_subscription_id` so `terraform init` can resolve the backend.
 
 ## Consumer Example (Plan Only)
@@ -79,6 +80,7 @@ jobs:
 		with:
 			terraform_working_directory: terraform/key-vault
 			tfvars_file: terraform.tfvars
+			azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 			backend_resource_group_name: rg-common-solutions-tfstate
 			backend_storage_account_name: tfstatecommontc7iagly
 			backend_container_name: tfstate
@@ -87,7 +89,6 @@ jobs:
 		secrets:
 			azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
 			azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-			azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 ```
 
 ## Consumer Example (Plan And Apply)
@@ -104,6 +105,7 @@ jobs:
 		with:
 			terraform_working_directory: terraform/key-vault
 			tfvars_file: terraform.tfvars
+			azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 			backend_resource_group_name: rg-common-solutions-tfstate
 			backend_storage_account_name: tfstatecommontc7iagly
 			backend_container_name: tfstate
@@ -112,7 +114,6 @@ jobs:
 		secrets:
 			azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
 			azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-			azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 ```
 
 ## Consumer Example (Management Group)

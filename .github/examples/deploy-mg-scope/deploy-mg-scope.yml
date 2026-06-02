@@ -1,7 +1,6 @@
 # Prerequisites:
 # - Secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID
 # - Variables: TFSTATE_SUBSCRIPTION_ID
-# - Optional secret: AZURE_SUBSCRIPTION_ID (only if you want subscription-scoped login)
 
 name: Deploy Management Group Scope
 

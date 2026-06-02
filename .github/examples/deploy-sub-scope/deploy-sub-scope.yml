@@ -1,6 +1,6 @@
 # Prerequisites:
-# - Secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID
-# - Variables: TFSTATE_SUBSCRIPTION_ID
+# - Secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID
+# - Variables: AZURE_SUBSCRIPTION_ID, TFSTATE_SUBSCRIPTION_ID
 
 name: Deploy Subscription Scope
 
@@ -13,14 +13,14 @@ jobs:
     with:
       terraform_working_directory: terraform/key-vault
       tfvars_file: terraform.tfvars
+      azure_subscription_id: c33f9068-3058-4127-a12d-d44382efa830
       backend_resource_group_name: rg-common-solutions-tfstate
       backend_storage_account_name: tfstatecommontc7iagly
-      backend_subscription_id: ${{ vars.TFSTATE_SUBSCRIPTION_ID }}
+      backend_subscription_id: c33f9068-3058-4127-a12d-d44382efa830
       backend_container_name: tfstate
       backend_key: common/az-keyvault.tfstate
       run_apply: false
     secrets:
       azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
       azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-      azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 

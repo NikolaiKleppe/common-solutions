@@ -10,12 +10,12 @@ resource "github_actions_secret" "azure_tenant_id" {
 	value           = var.azure_tenant_id
 }
 
-resource "github_actions_secret" "azure_subscription_id" {
+resource "github_actions_variable" "azure_subscription_id" {
 	count = var.azure_subscription_id == "" ? 0 : 1
 
-	repository      = var.repository_name
-	secret_name     = "AZURE_SUBSCRIPTION_ID"
-	value           = var.azure_subscription_id
+	repository    = var.repository_name
+	variable_name = "AZURE_SUBSCRIPTION_ID"
+	value         = var.azure_subscription_id
 }
 
 resource "github_actions_variable" "tfstate_subscription_id" {
