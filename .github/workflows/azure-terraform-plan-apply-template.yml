@@ -10,8 +10,7 @@ on:
 
       terraform_version:
         description: Terraform version to install
-        required: false
-        default: "1.15.0"
+        required: true
         type: string
 
       tfvars_file:

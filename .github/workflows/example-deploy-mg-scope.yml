@@ -22,6 +22,7 @@ jobs:
       backend_container_name: tfstate
       backend_key: common/azdo-mg.tfstate
       run_apply: false
+      terraform_version: 1.15.5
     secrets:
       azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
       azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
