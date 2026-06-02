@@ -90,29 +90,8 @@ on:
         required: true
 
 jobs:
-  init:
-    name: Init Component
-    permissions:
-      contents: read
-      id-token: write
-    uses: ./.github/workflows/terraform-component-init.yml
-    with:
-      terraform_working_directory: ${{ inputs.terraform_working_directory }}
-      terraform_version: ${{ inputs.terraform_version }}
-      azure_subscription_id: ${{ inputs.azure_subscription_id }}
-      backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
-      backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
-      backend_subscription_id: ${{ inputs.backend_subscription_id }}
-      backend_container_name: ${{ inputs.backend_container_name }}
-      backend_key: ${{ inputs.backend_key }}
-
-    secrets:
-      azure_client_id: ${{ secrets.azure_client_id }}
-      azure_tenant_id: ${{ secrets.azure_tenant_id }}
-
   plan:
     name: Plan Component
-    needs: init
     permissions:
       contents: read
       id-token: write
