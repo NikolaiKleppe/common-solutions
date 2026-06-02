@@ -25,6 +25,18 @@ on:
         default: ""
         type: string
 
+      plan_file_name:
+        description: Terraform plan filename written in terraform_working_directory
+        required: false
+        default: terraform.tfplan
+        type: string
+
+      plan_artifact_name:
+        description: Artifact name used to store the Terraform plan
+        required: false
+        default: terraform-plan
+        type: string
+
       backend_resource_group_name:
         description: Azure resource group name for Terraform state storage
         required: true
@@ -104,6 +116,8 @@ jobs:
         run: |
           set -euo pipefail
 
+          plan_file_path="${{ inputs.terraform_working_directory }}/${{ inputs.plan_file_name }}"
+
           tfvars_arg=()
           if [ -n "${{ inputs.tfvars_file }}" ]; then
             tfvars_arg+=("-var-file=${{ inputs.tfvars_file }}")
@@ -113,6 +127,7 @@ jobs:
           terraform -chdir="${{ inputs.terraform_working_directory }}" plan \
             -input=false \
             -detailed-exitcode \
+            -out="${{ inputs.plan_file_name }}" \
             "${tfvars_arg[@]}"
           exit_code=$?
           set -e
@@ -127,3 +142,10 @@ jobs:
           else
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Upload Terraform Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.plan_artifact_name }}
+          path: ${{ inputs.terraform_working_directory }}/${{ inputs.plan_file_name }}
+          if-no-files-found: error

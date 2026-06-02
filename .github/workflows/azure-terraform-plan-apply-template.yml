@@ -19,6 +19,18 @@ on:
         default: ""
         type: string
 
+      plan_file_name:
+        description: Terraform plan filename written in terraform_working_directory
+        required: false
+        default: terraform.tfplan
+        type: string
+
+      plan_artifact_name:
+        description: Artifact name used to pass the Terraform plan from plan to apply
+        required: false
+        default: terraform-plan
+        type: string
+
       azure_subscription_id:
         description: Azure subscription ID for OIDC login (optional)
         required: false
@@ -109,6 +121,8 @@ jobs:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
       terraform_version: ${{ inputs.terraform_version }}
       tfvars_file: ${{ inputs.tfvars_file }}
+      plan_file_name: ${{ inputs.plan_file_name }}
+      plan_artifact_name: ${{ inputs.plan_artifact_name }}
       azure_subscription_id: ${{ inputs.azure_subscription_id }}
       backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
       backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
@@ -131,6 +145,8 @@ jobs:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
       terraform_version: ${{ inputs.terraform_version }}
       tfvars_file: ${{ inputs.tfvars_file }}
+      plan_file_name: ${{ inputs.plan_file_name }}
+      plan_artifact_name: ${{ inputs.plan_artifact_name }}
       apply_environment_name: ${{ inputs.apply_environment_name }}
       azure_subscription_id: ${{ inputs.azure_subscription_id }}
       backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
