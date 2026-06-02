@@ -35,3 +35,15 @@ variable "apply_environment_name" {
   type        = string
   default     = "terraform-apply"
 }
+
+variable "apply_environment_reviewer_usernames" {
+  description = "GitHub usernames allowed to approve the Terraform apply environment."
+  type        = list(string)
+  default     = []
+}
+
+variable "apply_environment_reviewer_team_slugs" {
+  description = "GitHub team slugs allowed to approve the Terraform apply environment."
+  type        = list(string)
+  default     = []
+}
