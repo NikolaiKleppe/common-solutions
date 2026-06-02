@@ -1,0 +1,42 @@
+name: Terraform Sub Scope PR Plan And Merge Apply
+
+# on:
+#   pull_request:
+#     branches:
+#       - main
+#     paths:
+#       - terraform/gh-action-examples/deploy-sub-scope/**
+#       - .github/workflows/**
+#       - .github/actions/**
+
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - terraform/gh-action-examples/deploy-sub-scope/**
+#       - .github/workflows/**
+#       - .github/actions/**
+
+jobs:
+  terraform:
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/azure-terraform-plan-apply-template.yml
+    with:
+      terraform_working_directory: terraform/gh-action-examples/deploy-sub-scope
+      terraform_version: 1.15.5
+      tfvars_file: terraform.tfvars
+      run_apply: ${{ github.event_name == 'push' }}
+      apply_environment_name: terraform-apply
+
+      azure_subscription_id: c33f9068-3058-4127-a12d-d44382efa830
+
+      backend_resource_group_name: rg-common-solutions-tfstate
+      backend_storage_account_name: tfstatecommontc7iagly
+      backend_subscription_id: c33f9068-3058-4127-a12d-d44382efa830
+      backend_container_name: tfstate
+      backend_key: common-solutions/gh-action-examples/deploy-sub-scope.tfstate
+    secrets:
+      azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+      azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
