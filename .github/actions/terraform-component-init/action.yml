@@ -39,9 +39,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
     - name: Azure Login (OIDC with subscription)
       if: ${{ inputs.azure_subscription_id != '' }}
       uses: azure/login@v2

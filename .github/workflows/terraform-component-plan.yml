@@ -65,6 +65,9 @@ jobs:
     outputs:
       has_changes: ${{ steps.plan.outputs.has_changes }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Run Terraform Init Component
         uses: ./.github/actions/terraform-component-init
         with:
