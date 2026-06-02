@@ -13,7 +13,7 @@ jobs:
       id-token: write
     uses: ./.github/workflows/azure-terraform-plan-apply-template.yml
     with:
-      terraform_working_directory: ../../terraform/gh-action-examples/deploy-sub-scope/
+      terraform_working_directory: terraform/gh-action-examples/deploy-sub-scope
       tfvars_file: terraform.tfvars
       azure_subscription_id: c33f9068-3058-4127-a12d-d44382efa830
       backend_resource_group_name: rg-common-solutions-tfstate
