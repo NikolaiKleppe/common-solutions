@@ -97,6 +97,5 @@ jobs:
 
           terraform -chdir="${{ inputs.terraform_working_directory }}" apply \
             -input=false \
-            -no-color \
             -auto-approve \
             "${tfvars_arg[@]}"
