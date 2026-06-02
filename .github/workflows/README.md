@@ -22,6 +22,11 @@ Consumer repositories must provide the following reusable workflow secrets:
 
 The Azure identity behind `azure_client_id` must have a federated credential for GitHub Actions and sufficient RBAC permissions at the target scope.
 
+Caller workflows must grant these job permissions when invoking the reusable workflow:
+
+- `contents: read`
+- `id-token: write`
+
 ## Required Inputs
 
 Main workflow required inputs:
@@ -76,6 +81,9 @@ on:
 
 jobs:
 	terraform:
+		permissions:
+			contents: read
+			id-token: write
 		uses: <owner>/<repo>/.github/workflows/azure-terraform-plan-apply-template.yml@main
 		with:
 			terraform_working_directory: terraform/key-vault
@@ -101,6 +109,9 @@ on:
 
 jobs:
 	terraform:
+		permissions:
+			contents: read
+			id-token: write
 		uses: <owner>/<repo>/.github/workflows/azure-terraform-plan-apply-template.yml@main
 		with:
 			terraform_working_directory: terraform/key-vault
@@ -126,6 +137,9 @@ on:
 
 jobs:
 	terraform:
+		permissions:
+			contents: read
+			id-token: write
 		uses: <owner>/<repo>/.github/workflows/azure-terraform-plan-apply-template.yml@main
 		with:
 			terraform_working_directory: terraform/az-devops/azdo-pipeline

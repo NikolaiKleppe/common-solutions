@@ -75,6 +75,9 @@ on:
 jobs:
   init:
     name: Init Component
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/terraform-component-init.yml
     with:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
@@ -93,6 +96,9 @@ jobs:
   plan:
     name: Plan Component
     needs: init
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/terraform-component-plan.yml
     with:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
@@ -112,6 +118,9 @@ jobs:
     name: Apply Component
     needs: plan
     if: ${{ inputs.run_apply }}
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/terraform-component-apply.yml
     with:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
