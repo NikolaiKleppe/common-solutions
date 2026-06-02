@@ -1,5 +1,10 @@
 name: Terraform Sub Scope PR Plan And Merge Apply
 
+
+
+on:
+  workflow_dispatch:
+
 # on:
 #   pull_request:
 #     branches:

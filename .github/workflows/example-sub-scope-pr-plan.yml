@@ -1,5 +1,9 @@
 name: Terraform Sub Scope PR Plan
 
+
+on:
+  workflow_dispatch:
+
 # on:
 #   pull_request:
 #     branches:
