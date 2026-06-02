@@ -5,26 +5,33 @@ inputs:
   terraform_working_directory:
     description: Terraform working directory relative to repository root
     required: true
+
   terraform_version:
     description: Terraform version to install
     required: false
-    default: "1.5.7"
+    default: "1.15.0"
+
   azure_client_id:
     description: Azure application or managed identity client ID
     required: true
+
   azure_tenant_id:
     description: Azure tenant ID
     required: true
+
   azure_subscription_id:
     description: Azure subscription ID (optional for management group deployments)
     required: false
     default: ""
+
   backend_resource_group_name:
     description: Azure resource group name for Terraform state storage
     required: true
+
   backend_storage_account_name:
     description: Azure storage account name for Terraform state storage
     required: true
+
   backend_subscription_id:
     description: Azure subscription ID hosting Terraform state storage (optional)
     required: false
@@ -32,6 +39,7 @@ inputs:
   backend_container_name:
     description: Azure blob container name for Terraform state storage
     required: true
+
   backend_key:
     description: Terraform state key
     required: true
