@@ -15,14 +15,17 @@ jobs:
     with:
       terraform_working_directory: terraform/gh-action-examples/deploy-sub-scope
       tfvars_file: terraform.tfvars
+      run_apply: false
+      terraform_version: 1.15.5
+
       azure_subscription_id: c33f9068-3058-4127-a12d-d44382efa830
+      
       backend_resource_group_name: rg-common-solutions-tfstate
       backend_storage_account_name: tfstatecommontc7iagly
       backend_subscription_id: c33f9068-3058-4127-a12d-d44382efa830
       backend_container_name: tfstate
-      backend_key: common/az-keyvault.tfstate
-      run_apply: false
-      terraform_version: 1.15.5
+      backend_key: common-solutions/gh-action-examples/deploy-sub-scope.tfstate
+
     secrets:
       azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
       azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}

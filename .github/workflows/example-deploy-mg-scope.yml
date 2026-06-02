@@ -15,14 +15,15 @@ jobs:
     uses: ./.github/workflows/azure-terraform-plan-apply-template.yml
     with:
       terraform_working_directory: terraform/gh-action-examples/deploy-mg-scope
-      # tfvars_file: example.management-group.tfvars
+      run_apply: false
+      terraform_version: 1.15.5
+
       backend_resource_group_name: rg-common-solutions-tfstate
       backend_storage_account_name: tfstatecommontc7iagly
       backend_subscription_id: c33f9068-3058-4127-a12d-d44382efa830
       backend_container_name: tfstate
-      backend_key: common/azdo-mg.tfstate
-      run_apply: false
-      terraform_version: 1.15.5
+      backend_key: common-solutions/gh-action-examples/deploy-mg-scope.tfstate
+
     secrets:
       azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
       azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
