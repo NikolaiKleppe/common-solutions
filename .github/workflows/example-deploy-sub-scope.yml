@@ -1,7 +1,7 @@
 # Prerequisites:
 # - Secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID
 
-name: Deploy Subscription Scope
+name: Example - Deploy Subscription Scope
 
 on:
   workflow_dispatch:

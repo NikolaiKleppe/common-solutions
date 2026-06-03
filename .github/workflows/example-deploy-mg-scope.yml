@@ -2,7 +2,7 @@
 # - Secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID
 # - Variables: TFSTATE_SUBSCRIPTION_ID
 
-name: Deploy Management Group Scope
+name: Example - Deploy Management Group Scope
 
 on:
   workflow_dispatch:
