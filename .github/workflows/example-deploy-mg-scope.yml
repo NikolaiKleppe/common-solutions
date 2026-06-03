@@ -12,8 +12,8 @@ on:
   push:
     paths:
       - terraform/gh-action-examples/deploy-mg-scope/**
-      - .github/workflows/**
-      - .github/actions/**
+      # - .github/workflows/**
+      # - .github/actions/**
 
 jobs:
   terraform:
