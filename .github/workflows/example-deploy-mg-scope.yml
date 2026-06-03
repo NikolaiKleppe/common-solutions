@@ -20,7 +20,7 @@ jobs:
     uses: ./.github/workflows/azure-terraform-plan-apply-template.yml
     with:
       terraform_working_directory: terraform/gh-action-examples/deploy-mg-scope
-      run_apply: false
+      run_apply: true
       terraform_version: 1.15.5
       apply_environment_name: terraform-apply-no-gate
 
