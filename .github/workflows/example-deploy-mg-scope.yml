@@ -6,8 +6,8 @@ name: Example - Deploy Management Group Scope
 
 on:
   workflow_dispatch:
-  path:
-    - terraform/gh-action-examples/deploy-mg-scope/**
+path:
+  - terraform/gh-action-examples/deploy-mg-scope/**
 
 jobs:
   terraform:
