@@ -191,7 +191,16 @@ jobs:
               type = parts[n - 1]
               name = parts[n]
 
-              output_line = sprintf("%s: resource \"%s\" \"%s\"%s", op, type, name, note)
+              icon = ""
+              if (op == "add") {
+                icon = "🟢"
+              } else if (op == "change") {
+                icon = "🟡"
+              } else if (op == "destroy") {
+                icon = "🔴"
+              }
+
+              output_line = sprintf("%s %s: resource \"%s\" \"%s\"%s", icon, toupper(op), type, name, note)
 
               if (op == "add") {
                 adds = adds output_line "\n"
