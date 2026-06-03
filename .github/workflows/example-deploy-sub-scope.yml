@@ -5,6 +5,8 @@ name: Example - Deploy Subscription Scope
 
 on:
   workflow_dispatch:
+path:
+  - terraform/gh-action-examples/deploy-sub-scope/**
 
 jobs:
   terraform:
