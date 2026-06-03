@@ -20,6 +20,12 @@ variable "azure_subscription_id" {
   default     = ""
 }
 
+variable "management_group_id" {
+  description = "Optional management group resource ID scope for role assignment, for example /providers/Microsoft.Management/managementGroups/contoso-platform."
+  type        = string
+  default     = ""
+}
+
 variable "tfstate_subscription_id" {
   description = "Value for the TFSTATE_SUBSCRIPTION_ID GitHub Actions variable used by backend configuration."
   type        = string

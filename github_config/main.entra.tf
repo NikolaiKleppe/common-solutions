@@ -26,3 +26,12 @@ resource "azurerm_role_assignment" "sp_contributor" {
   role_definition_name = "Contributor"
   principal_id       = azuread_service_principal.gh_actions.object_id
 }
+
+resource "azurerm_role_assignment" "sp_contributor_management_group" {
+  count                = var.management_group_id == "" ? 0 : 1
+  scope                = var.management_group_id
+  role_definition_name = "Resource Policy Contributor"
+  principal_id         = azuread_service_principal.gh_actions.object_id
+}
+
+
