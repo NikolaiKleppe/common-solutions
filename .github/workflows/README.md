@@ -12,6 +12,11 @@ This directory provides reusable workflow templates for Terraform plan/apply wit
 
 - `.github/actions/terraform-init/action.yml`: Shared action used by child reusable workflows to run checkout, Azure OIDC login, Terraform setup, and `terraform init` with explicit `-backend-config` flags.
 
+## Plan Summary Action
+
+- `.github/actions/terraform-plan-render-summary/action.yml`: Reusable action that converts a Terraform binary plan into one-line add/change/destroy summary output for PR comments and logs.
+- See `.github/actions/terraform-plan-render-summary/README.md` for inputs, outputs, and usage examples.
+
 ## OIDC Requirements
 
 Consumer repositories must provide the following reusable workflow secrets:

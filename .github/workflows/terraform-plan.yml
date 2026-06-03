@@ -144,28 +144,21 @@ jobs:
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Render human-readable plan output
+      - name: Render plan summary for PR comment
         id: show_plan
-        if: steps.plan.outcome == 'success'
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Use a random delimiter to safely handle any text in the plan output.
-          delimiter="$(openssl rand -hex 8)"
-          {
-            echo "plan_text<<${delimiter}"
-            terraform -chdir="${{ inputs.terraform_working_directory }}" show \
-              -no-color "${{ inputs.plan_file_name }}"
-            echo "${delimiter}"
-          } >> "$GITHUB_OUTPUT"
+        if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
+        uses: ./.github/actions/terraform-plan-render-summary
+        with:
+          terraform_working_directory: ${{ inputs.terraform_working_directory }}
+          plan_file_name: ${{ inputs.plan_file_name }}
 
-      # - name: Comment plan output on PR
-      #   if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
-      #   uses: ./.github/actions/terraform-plan-pr-comment
-      #   with:
-      #     github_token: ${{ github.token }}
-      #     plan_output: ${{ steps.show_plan.outputs.plan_text }}
-      #     working_directory: ${{ inputs.terraform_working_directory }}
+      - name: Comment plan output on PR
+        if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
+        uses: ./.github/actions/terraform-plan-pr-comment
+        with:
+          github_token: ${{ github.token }}
+          plan_output: ${{ steps.show_plan.outputs.plan_summary }}
+          working_directory: ${{ inputs.terraform_working_directory }}
 
       - name: Upload Terraform Plan Artifact
         uses: actions/upload-artifact@v4

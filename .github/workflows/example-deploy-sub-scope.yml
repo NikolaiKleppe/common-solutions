@@ -9,7 +9,14 @@ name: Example - Deploy Subscription Scope
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - terraform/gh-action-examples/deploy-sub-scope/**
   push:
+    branches:
+      - main
     paths:
       - terraform/gh-action-examples/deploy-sub-scope/**
       - .github/workflows/**
@@ -25,7 +32,7 @@ jobs:
     with:
       terraform_working_directory: terraform/gh-action-examples/deploy-sub-scope
       tfvars_file: terraform.tfvars
-      run_apply: true
+      run_apply: false
       terraform_version: 1.15.5
       apply_environment_name: terraform-apply-no-gate
 
