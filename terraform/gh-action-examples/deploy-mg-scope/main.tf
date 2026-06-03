@@ -4,7 +4,7 @@ variable "management_group_id" {
 }
 
 resource "azurerm_management_group_policy_assignment" "apim_secret_named_values_audit" {
-	name                 = "gh-action-apim-secret-named-values-kv-audit"
+	name                 = "gh-action-apim-secret"
 	display_name         = "gh-action-examples-API Management secret named values should be stored in Azure Key Vault"
 	description          = "Example assignment of a built-in policy definition at management group scope in Audit mode."
 	management_group_id  = "/providers/Microsoft.Management/managementGroups/${var.management_group_id}"
