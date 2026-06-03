@@ -154,72 +154,72 @@ jobs:
           terraform -chdir="${{ inputs.terraform_working_directory }}" show \
             -no-color "${{ inputs.plan_file_name }}" > "$plan_text_file"
 
-          if [ "${{ steps.plan.outputs.has_changes }}" != "true" ]; then
-            plan_summary="No changes. Infrastructure is up-to-date."
-          else
-            plan_summary="$(awk '
-              BEGIN {
-                adds = ""
-                changes = ""
-                destroys = ""
+          plan_summary="$(awk '
+            BEGIN {
+              adds = ""
+              changes = ""
+              destroys = ""
+            }
+
+            /^  # / {
+              line = $0
+              sub(/^  # /, "", line)
+
+              op = ""
+              note = ""
+              if (line ~ / will be created$/) {
+                op = "add"
+              } else if (line ~ / will be updated in-place$/) {
+                op = "change"
+              } else if (line ~ / will be destroyed$/) {
+                op = "destroy"
+              } else if (line ~ / must be replaced$/) {
+                op = "change"
+                note = " (recreate)"
+              } else {
+                next
               }
 
-              /^  # / {
-                line = $0
-                sub(/^  # /, "", line)
+              addr = line
+              sub(/ (will be created|will be updated in-place|will be destroyed|must be replaced)$/, "", addr)
 
-                op = ""
-                note = ""
-                if (line ~ / will be created$/) {
-                  op = "add"
-                } else if (line ~ / will be updated in-place$/) {
-                  op = "change"
-                } else if (line ~ / will be destroyed$/) {
-                  op = "destroy"
-                } else if (line ~ / must be replaced$/) {
-                  op = "change"
-                  note = " (recreate)"
-                } else {
-                  next
-                }
-
-                addr = line
-                sub(/ (will be created|will be updated in-place|will be destroyed|must be replaced)$/, "", addr)
-
-                n = split(addr, parts, /\./)
-                if (n < 2) {
-                  next
-                }
-
-                type = parts[n - 1]
-                name = parts[n]
-
-                output_line = sprintf("%s: resource \"%s\" \"%s\"%s", op, type, name, note)
-
-                if (op == "add") {
-                  adds = adds output_line "\n"
-                } else if (op == "change") {
-                  changes = changes output_line "\n"
-                } else if (op == "destroy") {
-                  destroys = destroys output_line "\n"
-                }
+              n = split(addr, parts, /\./)
+              if (n < 2) {
+                next
               }
 
-              END {
-                if (adds != "") {
-                  printf "%s", adds
-                }
-                if (changes != "") {
-                  printf "%s", changes
-                }
-                if (destroys != "") {
-                  printf "%s", destroys
-                }
-              }
-            ' "$plan_text_file")"
+              type = parts[n - 1]
+              name = parts[n]
 
-            if [ -z "$plan_summary" ]; then
-              plan_summary="No add/change/destroy operations detected."
+              output_line = sprintf("%s: resource \"%s\" \"%s\"%s", op, type, name, note)
+
+              if (op == "add") {
+                adds = adds output_line "\n"
+              } else if (op == "change") {
+                changes = changes output_line "\n"
+              } else if (op == "destroy") {
+                destroys = destroys output_line "\n"
+              }
+            }
+
+            END {
+              if (adds != "") {
+                printf "%s", adds
+              }
+              if (changes != "") {
+                printf "%s", changes
+              }
+              if (destroys != "") {
+                printf "%s", destroys
+              }
+            }
+          ' "$plan_text_file")"
+
+          if [ -z "$plan_summary" ]; then
+            if grep -q '^No changes\.' "$plan_text_file"; then
+              plan_summary="No changes. Infrastructure is up-to-date."
+            else
+              plan_summary="Plan output could not be summarized into add/change/destroy lines. Check workflow logs for full details."
             fi
           fi
 
