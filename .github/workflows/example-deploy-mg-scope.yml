@@ -6,8 +6,11 @@ name: Example - Deploy Management Group Scope
 
 on:
   workflow_dispatch:
-  path:
-    - terraform/gh-action-examples/deploy-mg-scope/**
+  push:
+    paths:
+      - terraform/gh-action-examples/deploy-mg-scope/**
+      - .github/workflows/**
+      - .github/actions/**
 
 jobs:
   terraform:
@@ -19,6 +22,7 @@ jobs:
       terraform_working_directory: terraform/gh-action-examples/deploy-mg-scope
       run_apply: false
       terraform_version: 1.15.5
+      apply_environment_name: terraform-apply-no-gate
 
       backend_resource_group_name: rg-common-solutions-tfstate
       backend_storage_account_name: tfstatecommontc7iagly

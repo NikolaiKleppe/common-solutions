@@ -30,3 +30,12 @@ resource "github_repository_environment" "terraform_apply" {
 	}
 }
 
+resource "github_repository_environment" "terraform_apply_no_gate" {
+	environment         = "terraform-apply-no-gate"
+	repository          = var.repository_name
+	prevent_self_review = false
+	can_admins_bypass   = true
+}
+
+
+
