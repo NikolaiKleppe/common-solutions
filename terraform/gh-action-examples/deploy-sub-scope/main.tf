@@ -3,6 +3,8 @@ resource "azurerm_resource_group" "example" {
   location = "West Europe"
 }
 
+
+# Trigger
 resource "azurerm_resource_group" "example-2" {
   name     = "rg-example-deploy-sub-scope-2"
   location = "West Europe"

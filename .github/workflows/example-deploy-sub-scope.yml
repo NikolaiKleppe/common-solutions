@@ -9,7 +9,14 @@ name: Example - Deploy Subscription Scope
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - terraform/gh-action-examples/deploy-sub-scope/**
   push:
+    branches:
+      - main
     paths:
       - terraform/gh-action-examples/deploy-sub-scope/**
       - .github/workflows/**
