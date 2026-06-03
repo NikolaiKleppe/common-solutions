@@ -144,18 +144,92 @@ jobs:
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Render human-readable plan output
+      - name: Render plan summary for PR comment
         id: show_plan
         if: steps.plan.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
+          plan_text_file="$(mktemp)"
+          terraform -chdir="${{ inputs.terraform_working_directory }}" show \
+            -no-color "${{ inputs.plan_file_name }}" > "$plan_text_file"
+
+          if [ "${{ steps.plan.outputs.has_changes }}" != "true" ]; then
+            plan_summary="No changes. Infrastructure is up-to-date."
+          else
+            plan_summary="$(awk '
+              BEGIN {
+                adds = ""
+                changes = ""
+                destroys = ""
+              }
+
+              /^  # / {
+                line = $0
+                sub(/^  # /, "", line)
+
+                op = ""
+                note = ""
+                if (line ~ / will be created$/) {
+                  op = "add"
+                } else if (line ~ / will be updated in-place$/) {
+                  op = "change"
+                } else if (line ~ / will be destroyed$/) {
+                  op = "destroy"
+                } else if (line ~ / must be replaced$/) {
+                  op = "change"
+                  note = " (recreate)"
+                } else {
+                  next
+                }
+
+                addr = line
+                sub(/ (will be created|will be updated in-place|will be destroyed|must be replaced)$/, "", addr)
+
+                n = split(addr, parts, /\./)
+                if (n < 2) {
+                  next
+                }
+
+                type = parts[n - 1]
+                name = parts[n]
+
+                output_line = sprintf("%s: resource \"%s\" \"%s\"%s", op, type, name, note)
+
+                if (op == "add") {
+                  adds = adds output_line "\n"
+                } else if (op == "change") {
+                  changes = changes output_line "\n"
+                } else if (op == "destroy") {
+                  destroys = destroys output_line "\n"
+                }
+              }
+
+              END {
+                if (adds != "") {
+                  printf "%s", adds
+                }
+                if (changes != "") {
+                  printf "%s", changes
+                }
+                if (destroys != "") {
+                  printf "%s", destroys
+                }
+              }
+            ' "$plan_text_file")"
+
+            if [ -z "$plan_summary" ]; then
+              plan_summary="No add/change/destroy operations detected."
+            fi
+          fi
+
+          rm -f "$plan_text_file"
+
           # Use a random delimiter to safely handle any text in the plan output.
           delimiter="$(openssl rand -hex 8)"
           {
-            echo "plan_text<<${delimiter}"
-            terraform -chdir="${{ inputs.terraform_working_directory }}" show \
-              -no-color "${{ inputs.plan_file_name }}"
+            echo "plan_summary<<${delimiter}"
+            echo "$plan_summary"
             echo "${delimiter}"
           } >> "$GITHUB_OUTPUT"
 
@@ -164,7 +238,7 @@ jobs:
         uses: ./.github/actions/terraform-plan-pr-comment
         with:
           github_token: ${{ github.token }}
-          plan_output: ${{ steps.show_plan.outputs.plan_text }}
+          plan_output: ${{ steps.show_plan.outputs.plan_summary }}
           working_directory: ${{ inputs.terraform_working_directory }}
 
       - name: Upload Terraform Plan Artifact

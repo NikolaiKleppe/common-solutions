@@ -1,13 +1,13 @@
 # .github/actions/terraform-plan-pr-comment/action.yml
 #
-# Composite action — Post or update a Terraform plan summary on a pull request.
+# Composite action — Post or update a Terraform plan operation summary on a pull request.
 #
 # USAGE
 # -----
 # - uses: ./.github/actions/terraform-plan-pr-comment
 #   with:
 #     github_token: ${{ github.token }}
-#     plan_output:  ${{ steps.show_plan.outputs.plan_text }}
+#     plan_output:  ${{ steps.show_plan.outputs.plan_summary }}
 #     working_directory: terraform/my-stack
 #
 # The action writes or updates a single comment per working directory per PR.
@@ -20,7 +20,7 @@
 #   pull-requests: write
 
 name: Terraform Plan PR Comment
-description: Posts or updates a Terraform plan summary as a pull request comment.
+description: Posts or updates a Terraform plan operation summary as a pull request comment.
 
 inputs:
   github_token:
@@ -28,7 +28,7 @@ inputs:
     required: true
 
   plan_output:
-    description: Human-readable Terraform plan text (output of `terraform show -no-color`).
+    description: One-line-per-resource operation summary (add/change/destroy).
     required: true
 
   working_directory:
@@ -67,10 +67,10 @@ runs:
 
           const body = [
             marker,
-            `## 🔍 Terraform Plan`,
+            `## 🔍 Terraform Plan Operations`,
             '',
             dirLine + `<details>`,
-            `<summary>Show plan output</summary>`,
+            `<summary>Show add/change/destroy summary</summary>`,
             '',
             '```hcl',
             planText,
