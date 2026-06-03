@@ -1,4 +1,4 @@
-name: Reusable Workflow - Azure Terraform Deploy
+name: Terraform Deploy Template
 
 on:
   workflow_call:
