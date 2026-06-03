@@ -1,4 +1,4 @@
-name: Terraform Component Plan
+name: Terraform Plan Template
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: Azure Terraform Plan Apply Template
+name: Azure Terraform Deploy Template
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: Terraform Component Init
+name: Terraform Init Template
 
 on:
   workflow_call:
@@ -7,7 +7,7 @@ on:
         description: Terraform working directory relative to repository root
         required: true
         type: string
-        
+
       terraform_version:
         description: Terraform version to install
         required: true
