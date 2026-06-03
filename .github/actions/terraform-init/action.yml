@@ -1,4 +1,4 @@
-name: Terraform Component Init
+name: Composite Action - Terraform Init
 description: Shared Terraform initialization with Azure OIDC login and backend config flags
 
 inputs:

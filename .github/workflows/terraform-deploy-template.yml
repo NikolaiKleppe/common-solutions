@@ -1,4 +1,4 @@
-name: Template - Azure Terraform Deploy
+name: Reusable Workflow - Azure Terraform Deploy
 
 on:
   workflow_call:
@@ -95,7 +95,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: ./.github/workflows/terraform-component-plan.yml
+    uses: ./.github/workflows/terraform-plan.yml
     with:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
       terraform_version: ${{ inputs.terraform_version }}
@@ -119,7 +119,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: ./.github/workflows/terraform-component-apply.yml
+    uses: ./.github/workflows/terraform-apply.yml
     with:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
       terraform_version: ${{ inputs.terraform_version }}

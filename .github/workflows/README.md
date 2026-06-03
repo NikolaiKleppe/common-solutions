@@ -4,14 +4,13 @@ This directory provides reusable workflow templates for Terraform plan/apply wit
 
 ## Templates
 
-- `azure-terraform-plan-apply-template.yml`: Main reusable workflow that orchestrates init, plan, and optional apply.
-- `terraform-component-init.yml`: Child template for Terraform init.
-- `terraform-component-plan.yml`: Child template for Terraform plan.
-- `terraform-component-apply.yml`: Child template for Terraform apply.
+- `terraform-deploy-template.yml`: Main reusable workflow that orchestrates init, plan, and optional apply.
+- `terraform-plan.yml`: Child reusable workflow for Terraform plan.
+- `terraform-apply.yml`: Child reusable workflow for Terraform apply.
 
-## Shared Component
+## Shared Action
 
-- `.github/actions/terraform-component-init/action.yml`: Shared component used by child templates to run checkout, Azure OIDC login, Terraform setup, and `terraform init` with explicit `-backend-config` flags.
+- `.github/actions/terraform-init/action.yml`: Shared action used by child reusable workflows to run checkout, Azure OIDC login, Terraform setup, and `terraform init` with explicit `-backend-config` flags.
 
 ## OIDC Requirements
 
@@ -45,11 +44,11 @@ Optional inputs:
 - `backend_subscription_id` (default: empty)
 - `run_apply` (default: `false`)
 
-`run_apply` controls whether the apply child template runs. By default, only init and plan execute.
+`run_apply` controls whether the apply child reusable workflow runs. By default, only init and plan execute.
 
 ## Terraform Init Backend Flags
 
-The shared init component always executes Terraform init with backend config flags:
+The shared init action always executes Terraform init with backend config flags:
 
 - `-backend-config="resource_group_name=..."`
 - `-backend-config="storage_account_name=..."`
@@ -84,7 +83,7 @@ jobs:
 		permissions:
 			contents: read
 			id-token: write
-		uses: <owner>/<repo>/.github/workflows/azure-terraform-plan-apply-template.yml@main
+		uses: <owner>/<repo>/.github/workflows/terraform-deploy-template.yml@main
 		with:
 			terraform_working_directory: terraform/key-vault
 			tfvars_file: terraform.tfvars
@@ -112,7 +111,7 @@ jobs:
 		permissions:
 			contents: read
 			id-token: write
-		uses: <owner>/<repo>/.github/workflows/azure-terraform-plan-apply-template.yml@main
+		uses: <owner>/<repo>/.github/workflows/terraform-deploy-template.yml@main
 		with:
 			terraform_working_directory: terraform/key-vault
 			tfvars_file: terraform.tfvars
@@ -140,7 +139,7 @@ jobs:
 		permissions:
 			contents: read
 			id-token: write
-		uses: <owner>/<repo>/.github/workflows/azure-terraform-plan-apply-template.yml@main
+		uses: <owner>/<repo>/.github/workflows/terraform-deploy-template.yml@main
 		with:
 			terraform_working_directory: terraform/az-devops/azdo-pipeline
 			tfvars_file: examples/example.management-group.tfvars

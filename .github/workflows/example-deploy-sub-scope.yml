@@ -1,5 +1,9 @@
 # Prerequisites:
 # - Secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID
+# Usage:
+# - Example subscription-scope deployment workflow that runs plan and apply.
+# - Keep workflow_dispatch for manual runs; use push path filters for automation.
+# - Uses the no-gate environment by default for non-blocking apply.
 
 name: Example - Deploy Subscription Scope
 
@@ -16,7 +20,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: ./.github/workflows/azure-terraform-plan-apply-template.yml
+    uses: ./.github/workflows/terraform-deploy-template.yml
     with:
       terraform_working_directory: terraform/gh-action-examples/deploy-sub-scope
       tfvars_file: terraform.tfvars

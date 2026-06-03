@@ -1,3 +1,8 @@
+# Reference workflow showing a combined PR plan and post-merge apply pattern in a single file.
+# Usage:
+# 1) Uncomment the pull_request and push triggers below for normal automation.
+# 2) On pull_request events, this workflow runs plan only.
+# 3) On push to main (after merge), this workflow runs plan and then apply.
 name: Example - Terraform Sub Scope PR Plan And Merge Apply
 
 
@@ -27,7 +32,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: ./.github/workflows/azure-terraform-plan-apply-template.yml
+    uses: ./.github/workflows/terraform-deploy-template.yml
     with:
       terraform_working_directory: terraform/gh-action-examples/deploy-sub-scope
       terraform_version: 1.15.5
