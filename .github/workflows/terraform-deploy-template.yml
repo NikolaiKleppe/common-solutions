@@ -95,6 +95,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      pull-requests: write
     uses: ./.github/workflows/terraform-plan.yml
     with:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
