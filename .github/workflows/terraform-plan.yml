@@ -159,13 +159,13 @@ jobs:
             echo "${delimiter}"
           } >> "$GITHUB_OUTPUT"
 
-      # - name: Comment plan output on PR
-      #   if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
-      #   uses: ./.github/actions/terraform-plan-pr-comment
-      #   with:
-      #     github_token: ${{ github.token }}
-      #     plan_output: ${{ steps.show_plan.outputs.plan_text }}
-      #     working_directory: ${{ inputs.terraform_working_directory }}
+      - name: Comment plan output on PR
+        if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
+        uses: ./.github/actions/terraform-plan-pr-comment
+        with:
+          github_token: ${{ github.token }}
+          plan_output: ${{ steps.show_plan.outputs.plan_text }}
+          working_directory: ${{ inputs.terraform_working_directory }}
 
       - name: Upload Terraform Plan Artifact
         uses: actions/upload-artifact@v4
