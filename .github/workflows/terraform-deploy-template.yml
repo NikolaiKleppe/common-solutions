@@ -96,7 +96,7 @@ jobs:
       contents: read
       id-token: write
       pull-requests: write
-    uses: ./.github/workflows/terraform-plan.yml
+    uses: NikolaiKleppe/common-solutions/.github/workflows/terraform-plan.yml@main
     with:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
       terraform_version: ${{ inputs.terraform_version }}
@@ -120,7 +120,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: ./.github/workflows/terraform-apply.yml
+    uses: NikolaiKleppe/common-solutions/.github/workflows/terraform-apply.yml@main
     with:
       terraform_working_directory: ${{ inputs.terraform_working_directory }}
       terraform_version: ${{ inputs.terraform_version }}

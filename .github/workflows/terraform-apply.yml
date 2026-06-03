@@ -91,7 +91,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Terraform Init Component
-        uses: ./.github/actions/terraform-init
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-init@main
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           terraform_version: ${{ inputs.terraform_version }}

@@ -92,7 +92,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Terraform Init Component
-        uses: ./.github/actions/terraform-init
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-init@main
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           terraform_version: ${{ inputs.terraform_version }}
@@ -147,14 +147,14 @@ jobs:
       - name: Render plan summary for PR comment
         id: show_plan
         if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
-        uses: ./.github/actions/terraform-plan-render-summary
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-plan-render-summary@main
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           plan_file_name: ${{ inputs.plan_file_name }}
 
       - name: Comment plan output on PR
         if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
-        uses: ./.github/actions/terraform-plan-pr-comment
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-plan-pr-comment@main
         with:
           github_token: ${{ github.token }}
           plan_output: ${{ steps.show_plan.outputs.plan_summary }}
