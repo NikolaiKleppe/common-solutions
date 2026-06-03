@@ -1,0 +1,106 @@
+# .github/actions/terraform-plan-pr-comment/action.yml
+#
+# Composite action — Post or update a Terraform plan summary on a pull request.
+#
+# USAGE
+# -----
+# - uses: ./.github/actions/terraform-plan-pr-comment
+#   with:
+#     github_token: ${{ github.token }}
+#     plan_output:  ${{ steps.show_plan.outputs.plan_text }}
+#     working_directory: terraform/my-stack
+#
+# The action writes or updates a single comment per working directory per PR.
+# It uses an HTML marker comment as a stable identity so re-runs refresh the
+# same comment instead of adding a new one.
+#
+# PERMISSIONS REQUIRED (on the calling job)
+# ------------------------------------------
+# permissions:
+#   pull-requests: write
+
+name: Terraform Plan PR Comment
+description: Posts or updates a Terraform plan summary as a pull request comment.
+
+inputs:
+  github_token:
+    description: GitHub token with pull-requests write permission (pass github.token).
+    required: true
+
+  plan_output:
+    description: Human-readable Terraform plan text (output of `terraform show -no-color`).
+    required: true
+
+  working_directory:
+    description: >
+      Terraform working directory shown in the comment header. Used as part of the
+      unique marker so multiple stacks can each maintain their own comment.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Post or update PR plan comment
+      uses: actions/github-script@v7
+      env:
+        # Pass potentially large multi-line text via env to avoid shell quoting issues.
+        PLAN_OUTPUT: ${{ inputs.plan_output }}
+        WORKING_DIRECTORY: ${{ inputs.working_directory }}
+      with:
+        github-token: ${{ inputs.github_token }}
+        script: |
+          const workingDir  = process.env.WORKING_DIRECTORY || '';
+          const marker      = `<!-- terraform-plan-pr-comment:${workingDir ? ':' + workingDir : ''} -->`;
+          const maxLength   = 65000;
+
+          let planText = process.env.PLAN_OUTPUT || '(no plan output captured)';
+          const truncated = planText.length > maxLength;
+          if (truncated) {
+            planText = planText.substring(0, maxLength);
+          }
+
+          const dirLine  = workingDir ? `\`📁 ${workingDir}\`\n\n` : '';
+          const truncMsg = truncated
+            ? '\n\n> ⚠️ **Output truncated** — plan exceeds comment size limit. Check the workflow logs for the full output.'
+            : '';
+
+          const body = [
+            marker,
+            `## 🔍 Terraform Plan`,
+            '',
+            dirLine + `<details>`,
+            `<summary>Show plan output</summary>`,
+            '',
+            '```hcl',
+            planText,
+            '```',
+            '</details>',
+            truncMsg,
+          ].join('\n');
+
+          const { data: comments } = await github.rest.issues.listComments({
+            owner:        context.repo.owner,
+            repo:         context.repo.repo,
+            issue_number: context.issue.number,
+          });
+
+          const existing = comments.find(c => c.body && c.body.includes(marker));
+
+          if (existing) {
+            await github.rest.issues.updateComment({
+              owner:      context.repo.owner,
+              repo:       context.repo.repo,
+              comment_id: existing.id,
+              body,
+            });
+            core.info(`Updated existing plan comment (id: ${existing.id})`);
+          } else {
+            await github.rest.issues.createComment({
+              owner:        context.repo.owner,
+              repo:         context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+            core.info('Created new plan comment');
+          }
