@@ -1,4 +1,4 @@
-name: Terraform Component Apply
+name: Terraform Apply
 
 on:
   workflow_call:
@@ -80,7 +80,7 @@ on:
 
 jobs:
   apply:
-    name: Terraform Apply
+   # name: Terraform Apply
     runs-on: ubuntu-latest
     environment: ${{ inputs.apply_environment_name }}
     permissions:

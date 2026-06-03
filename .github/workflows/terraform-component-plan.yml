@@ -79,7 +79,7 @@ on:
 
 jobs:
   plan:
-    name: Terraform Plan
+    #name: Terraform Plan
     runs-on: ubuntu-latest
     permissions:
       contents: read

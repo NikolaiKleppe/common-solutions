@@ -91,7 +91,7 @@ on:
 
 jobs:
   plan:
-    name: Plan Component
+    #name: Plan Component
     permissions:
       contents: read
       id-token: write
@@ -113,7 +113,7 @@ jobs:
       azure_tenant_id: ${{ secrets.azure_tenant_id }}
 
   apply:
-    name: Apply Component
+    #name: Apply Component
     needs: plan
     if: ${{ inputs.run_apply }}
     permissions:
