@@ -90,19 +90,44 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Terraform Init Component
-        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-init@main
+      - name: Azure Login (OIDC with subscription)
+        if: ${{ inputs.azure_subscription_id != '' }}
+        uses: azure/login@v2
         with:
-          terraform_working_directory: ${{ inputs.terraform_working_directory }}
+          client-id: ${{ secrets.azure_client_id }}
+          tenant-id: ${{ secrets.azure_tenant_id }}
+          subscription-id: ${{ inputs.azure_subscription_id }}
+
+      - name: Azure Login (OIDC without subscription)
+        if: ${{ inputs.azure_subscription_id == '' }}
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.azure_client_id }}
+          tenant-id: ${{ secrets.azure_tenant_id }}
+          allow-no-subscriptions: true
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
           terraform_version: ${{ inputs.terraform_version }}
-          azure_client_id: ${{ secrets.azure_client_id }}
-          azure_tenant_id: ${{ secrets.azure_tenant_id }}
-          azure_subscription_id: ${{ inputs.azure_subscription_id }}
-          backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
-          backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
-          backend_subscription_id: ${{ inputs.backend_subscription_id }}
-          backend_container_name: ${{ inputs.backend_container_name }}
-          backend_key: ${{ inputs.backend_key }}
+
+      - name: Terraform Init
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          backend_subscription_arg=()
+          if [ -n "${{ inputs.backend_subscription_id }}" ]; then
+            backend_subscription_arg+=("-backend-config=subscription_id=${{ inputs.backend_subscription_id }}")
+          fi
+
+          terraform -chdir="${{ inputs.terraform_working_directory }}" init \
+            -input=false \
+            -backend-config="resource_group_name=${{ inputs.backend_resource_group_name }}" \
+            -backend-config="storage_account_name=${{ inputs.backend_storage_account_name }}" \
+            "${backend_subscription_arg[@]}" \
+            -backend-config="container_name=${{ inputs.backend_container_name }}" \
+            -backend-config="key=${{ inputs.backend_key }}"
 
       - name: Download Terraform Plan Artifact
         uses: actions/download-artifact@v4
