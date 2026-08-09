@@ -128,7 +128,7 @@ jobs:
       - name: Install tree and list files
         run: |
           sudo apt-get install -y tree
-          tree -a
+          tree -a -I '.git|.terraform'
 
       - name: Terraform Init
         uses: ./.github/actions/shared/.github/terraform-init
