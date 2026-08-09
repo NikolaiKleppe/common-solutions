@@ -124,7 +124,7 @@ jobs:
         with:
           repository: NikolaiKleppe/common-solutions
           ref: ${{ env.GIT_BRANCH }}
-          path: /actions/shared
+          path: actions/shared
 
       - name: Install tree and list files
         run: |
