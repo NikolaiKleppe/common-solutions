@@ -125,6 +125,14 @@ jobs:
           ref: ${{ env.GIT_BRANCH }}
           path: .github/actions/shared
 
+      - name: Print agent filesystem info
+        run: |
+          echo "Current working directory: $(pwd)"
+          echo "Listing files in current directory:"
+          ls -alh
+          echo "Listing files in .github/actions/shared:"
+          ls -alh .github/actions/shared
+
       - name: Terraform Init
         uses: ./.github/actions/shared/terraform-init
         with:
