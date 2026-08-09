@@ -1,16 +1,12 @@
 name: Terraform - Plan or Apply (Single Workflow)
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       operation:
         description: Operation to perform (plan or apply)
         required: true
-        type: choice
-        options:
-          - plan
-          - apply
-        default: plan
+        type: string
 
       terraform_working_directory:
         description: Terraform working directory relative to repository root
@@ -25,11 +21,13 @@ on:
       azure_subscription_id:
         description: Azure subscription ID for OIDC login (optional)
         required: false
+        default: ""
         type: string
 
       tfvars_file:
         description: Optional tfvars file path relative to terraform_working_directory
         required: false
+        default: ""
         type: string
 
       plan_file_name:
@@ -57,6 +55,7 @@ on:
       backend_subscription_id:
         description: Azure subscription ID hosting Terraform state storage (optional)
         required: false
+        default: ""
         type: string
 
       backend_container_name:
@@ -74,6 +73,20 @@ on:
         required: false
         default: terraform-apply
         type: string
+
+    secrets:
+      AZURE_CLIENT_ID:
+        description: Azure application or managed identity client ID
+        required: true
+
+      AZURE_TENANT_ID:
+        description: Azure tenant ID
+        required: true
+
+    outputs:
+      has_changes:
+        description: True when terraform plan reports changes
+        value: ${{ jobs.terraform.outputs.has_changes }}
 
 env:
   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
