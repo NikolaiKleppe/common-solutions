@@ -15,7 +15,8 @@ on:
 
       terraform_version:
         description: Terraform version to install
-        required: true
+        required: false
+        default: v1.15.8
         type: string
 
       azure_subscription_id:
