@@ -105,11 +105,29 @@ jobs:
     outputs:
       has_changes: ${{ steps.plan.outputs.has_changes }}
     steps:
+
+      # 1. Check out the CALLER repository code
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 2. Parse the branch/tag from the reusable workflow's native context
+      - name: Parse Reusable Workflow Ref
+        id: parse-ref
+        run: |
+          # Extracts everything after the "@" symbol
+          EXTRACTED_REF=$(echo "${{ github.workflow_ref }}" | awk -F'@' '{print $2}')
+          echo "action_ref=$EXTRACTED_REF" >> $GITHUB_OUTPUT
+
+      # 3. Check out the CENTRAL repository to a subfolder using that exact ref
+      - name: Checkout Central DevOps Actions
+        uses: actions/checkout@v4
+        with:
+          repository: NikolaiKleppe/common-solutions
+          ref: ${{ steps.parse-ref.outputs.action_ref }}
+          path: .github/actions/shared
+
       - name: Terraform Init
-        uses: ./.github/actions/terraform-init
+        uses: ./.github/actions/shared/terraform-init
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           terraform_version: ${{ inputs.terraform_version }}
@@ -124,7 +142,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        uses: ./.github/actions/terraform-plan
+        uses: ./.github/actions/shared/terraform-plan
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           tfvars_file: ${{ inputs.tfvars_file }}
@@ -134,7 +152,7 @@ jobs:
 
       - name: Terraform Apply
         if: ${{ inputs.operation == 'apply' }}
-        uses: ./.github/actions/terraform-apply
+        uses: ./.github/actions/shared/terraform-apply
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           plan_file_name: ${{ inputs.plan_file_name }}
