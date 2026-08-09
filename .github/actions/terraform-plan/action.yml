@@ -24,12 +24,6 @@ inputs:
     required: true
     type: string
 
-  upload_artifact:
-    description: Whether to upload the plan artifact
-    required: false
-    default: "false"
-    type: string
-
 runs:
   using: composite
   steps:
@@ -67,7 +61,6 @@ runs:
       fi
 
   - name: Upload plan artifact
-    if: ${{ inputs.upload_artifact == 'true' }}
     uses: actions/upload-artifact@v4
     with:
       name: ${{ inputs.plan_artifact_name }}
