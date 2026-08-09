@@ -108,7 +108,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Terraform Init
-        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-init@${{ github.workflow_sha }}
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-init@${{ github.sha }}
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           terraform_version: ${{ inputs.terraform_version }}
@@ -123,7 +123,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-plan@${{ github.workflow_sha }}
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-plan@${{ github.sha }}
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           tfvars_file: ${{ inputs.tfvars_file }}
@@ -133,7 +133,7 @@ jobs:
 
       - name: Terraform Apply
         if: ${{ inputs.operation == 'apply' }}
-        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-apply@${{ github.workflow_sha }}
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-apply@${{ github.sha }}
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           plan_file_name: ${{ inputs.plan_file_name }}
