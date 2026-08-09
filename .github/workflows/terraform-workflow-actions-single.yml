@@ -115,15 +115,14 @@ jobs:
         id: parse-ref
         run: |
           # Extracts everything after the "@" symbol
-          EXTRACTED_REF=$(echo "${{ github.workflow_ref }}" | awk -F'@' '{print $2}')
-          echo "action_ref=$EXTRACTED_REF" >> $GITHUB_OUTPUT
+          echo "GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_ENV
 
       # 3. Check out the CENTRAL repository to a subfolder using that exact ref
       - name: Checkout Central DevOps Actions
         uses: actions/checkout@v4
         with:
           repository: NikolaiKleppe/common-solutions
-          ref: ${{ steps.parse-ref.outputs.action_ref }}
+          ref: ${{ env.GIT_BRANCH }}
           path: .github/actions/shared
 
       - name: Terraform Init
