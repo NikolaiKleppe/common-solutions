@@ -131,7 +131,7 @@ jobs:
           tree -a -I '.git|.terraform'
 
       - name: Terraform Init
-        uses: ./.github/actions/shared/.github/terraform-init
+        uses: ./.github/actions/shared/.github/actions/terraform-init
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           terraform_version: ${{ inputs.terraform_version }}
@@ -146,7 +146,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        uses: ./.github/actions/shared/.github/terraform-plan
+        uses: ./.github/actions/shared/.github/actions/terraform-plan
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           tfvars_file: ${{ inputs.tfvars_file }}
@@ -156,7 +156,7 @@ jobs:
 
       - name: Terraform Apply
         if: ${{ inputs.operation == 'apply' }}
-        uses: ./.github/actions/shared/.github/terraform-apply
+        uses: ./.github/actions/shared/.github/actions/terraform-apply
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           plan_file_name: ${{ inputs.plan_file_name }}
