@@ -107,14 +107,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get workflow ref
-        id: getref
-        run: echo "ref=${GITHUB_WORKFLOW_REF#*@}" >> "$GITHUB_OUTPUT"
-        env:
-          GITHUB_WORKFLOW_REF: ${{ github.workflow_ref }}
-
       - name: Terraform Init
-        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-init@${{ steps.getref.outputs.ref }}
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-init@${{ github.workflow_sha }}
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           terraform_version: ${{ inputs.terraform_version }}
@@ -129,7 +123,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-plan@${{ steps.getref.outputs.ref }}
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-plan@${{ github.workflow_sha }}
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           tfvars_file: ${{ inputs.tfvars_file }}
@@ -139,7 +133,7 @@ jobs:
 
       - name: Terraform Apply
         if: ${{ inputs.operation == 'apply' }}
-        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-apply@${{ steps.getref.outputs.ref }}
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-apply@${{ github.workflow_sha }}
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           plan_file_name: ${{ inputs.plan_file_name }}
