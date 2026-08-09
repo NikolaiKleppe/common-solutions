@@ -98,6 +98,8 @@ jobs:
     name: Terraform ${{ inputs.operation }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.operation == 'apply' && inputs.apply_environment_name || '' }}
+    env:
+      PLAN_FILE_NAME: "${{ inputs.plan_file_name }}-${{ github.run_id }}"
     permissions:
       contents: read
       id-token: write
@@ -151,7 +153,7 @@ jobs:
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           tfvars_file: ${{ inputs.tfvars_file }}
-          plan_file_name: ${{ inputs.plan_file_name }}
+          plan_file_name: ${{ env.PLAN_FILE_NAME }}
           plan_artifact_name: ${{ inputs.plan_artifact_name }}
           upload_artifact: ${{ inputs.operation == 'plan' && 'true' || 'false' }}
 
@@ -160,5 +162,5 @@ jobs:
         uses: ./actions/shared/.github/actions/terraform-apply
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
-          plan_file_name: ${{ inputs.plan_file_name }}
+          plan_file_name: ${{ env.PLAN_FILE_NAME }}
           plan_artifact_name: ${{ inputs.plan_artifact_name }}
