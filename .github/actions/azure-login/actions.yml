@@ -1,0 +1,30 @@
+
+name: Composite Action - Azure Login
+description: Shared Azure OIDC login with optional subscription
+
+inputs:
+  azure_subscription_id:
+    description: Azure subscription ID for OIDC login (optional)
+    required: false
+    default: ""
+    type: string
+
+
+runs:
+  using: composite
+  steps:
+  - name: Azure Login (OIDC with subscription)
+    if: ${{ inputs.azure_subscription_id != '' }}
+    uses: azure/login@v2
+    with:
+      client-id: ${{ secrets.azure_client_id }}
+      tenant-id: ${{ secrets.azure_tenant_id }}
+      subscription-id: ${{ inputs.azure_subscription_id }}
+
+  - name: Azure Login (OIDC without subscription)
+    if: ${{ inputs.azure_subscription_id == '' }}
+    uses: azure/login@v2
+    with:
+      client-id: ${{ secrets.azure_client_id }}
+      tenant-id: ${{ secrets.azure_tenant_id }}
+      allow-no-subscriptions: true
