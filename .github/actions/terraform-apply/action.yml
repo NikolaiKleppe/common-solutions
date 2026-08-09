@@ -15,8 +15,7 @@ inputs:
 
   plan_artifact_name:
     description: Artifact name used to retrieve the Terraform plan
-    required: false
-    default: terraform-plan
+    required: true
     type: string
 
 runs:

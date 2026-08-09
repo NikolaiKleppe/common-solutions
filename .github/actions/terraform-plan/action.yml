@@ -21,8 +21,7 @@ inputs:
 
   plan_artifact_name:
     description: Artifact name used to store the Terraform plan
-    required: false
-    default: terraform-plan
+    required: true
     type: string
 
   upload_artifact:
