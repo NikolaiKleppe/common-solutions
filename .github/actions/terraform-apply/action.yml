@@ -1,0 +1,39 @@
+name: Composite Action - Terraform Apply
+description: Shared Terraform apply with artifact download
+
+inputs:
+  terraform_working_directory:
+    description: Terraform working directory relative to repository root
+    required: true
+    type: string
+
+  plan_file_name:
+    description: Terraform plan filename to apply
+    required: false
+    default: terraform.tfplan
+    type: string
+
+  plan_artifact_name:
+    description: Artifact name used to retrieve the Terraform plan
+    required: false
+    default: terraform-plan
+    type: string
+
+runs:
+  using: composite
+  steps:
+    - name: Download plan artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.plan_artifact_name }}
+        path: ${{ inputs.terraform_working_directory }}
+
+    - name: Terraform Apply
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        terraform -chdir="${{ inputs.terraform_working_directory }}" apply \
+          -input=false \
+          -auto-approve \
+          "${{ inputs.plan_file_name }}"

@@ -1,0 +1,133 @@
+name: Terraform - Plan or Apply (Single Workflow)
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Operation to perform (plan or apply)
+        required: true
+        type: choice
+        options:
+          - plan
+          - apply
+        default: plan
+
+      terraform_working_directory:
+        description: Terraform working directory relative to repository root
+        required: true
+        type: string
+
+      terraform_version:
+        description: Terraform version to install
+        required: true
+        type: string
+
+      azure_subscription_id:
+        description: Azure subscription ID for OIDC login (optional)
+        required: false
+        type: string
+
+      tfvars_file:
+        description: Optional tfvars file path relative to terraform_working_directory
+        required: false
+        type: string
+
+      plan_file_name:
+        description: Terraform plan filename written in terraform_working_directory
+        required: false
+        default: terraform.tfplan
+        type: string
+
+      plan_artifact_name:
+        description: Artifact name used to store/retrieve the Terraform plan
+        required: false
+        default: terraform-plan
+        type: string
+
+      backend_resource_group_name:
+        description: Azure resource group name for Terraform state storage
+        required: true
+        type: string
+
+      backend_storage_account_name:
+        description: Azure storage account name for Terraform state storage
+        required: true
+        type: string
+
+      backend_subscription_id:
+        description: Azure subscription ID hosting Terraform state storage (optional)
+        required: false
+        type: string
+
+      backend_container_name:
+        description: Azure blob container name for Terraform state storage
+        required: true
+        type: string
+
+      backend_key:
+        description: Terraform state key
+        required: true
+        type: string
+
+      apply_environment_name:
+        description: GitHub Environment name used to gate Terraform apply
+        required: false
+        default: terraform-apply
+        type: string
+
+env:
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+jobs:
+  terraform:
+    name: Terraform ${{ inputs.operation }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.operation == 'apply' && inputs.apply_environment_name || '' }}
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    outputs:
+      has_changes: ${{ steps.plan.outputs.has_changes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get workflow ref
+        id: getref
+        run: echo "ref=${GITHUB_WORKFLOW_REF#*@}" >> "$GITHUB_OUTPUT"
+        env:
+          GITHUB_WORKFLOW_REF: ${{ github.workflow_ref }}
+
+      - name: Terraform Init
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-init@${{ steps.getref.outputs.ref }}
+        with:
+          terraform_working_directory: ${{ inputs.terraform_working_directory }}
+          terraform_version: ${{ inputs.terraform_version }}
+          azure_client_id: ${{ env.AZURE_CLIENT_ID }}
+          azure_tenant_id: ${{ env.AZURE_TENANT_ID }}
+          azure_subscription_id: ${{ inputs.azure_subscription_id }}
+          backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
+          backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
+          backend_subscription_id: ${{ inputs.backend_subscription_id }}
+          backend_container_name: ${{ inputs.backend_container_name }}
+          backend_key: ${{ inputs.backend_key }}
+
+      - name: Terraform Plan
+        id: plan
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-plan@${{ steps.getref.outputs.ref }}
+        with:
+          terraform_working_directory: ${{ inputs.terraform_working_directory }}
+          tfvars_file: ${{ inputs.tfvars_file }}
+          plan_file_name: ${{ inputs.plan_file_name }}
+          plan_artifact_name: ${{ inputs.plan_artifact_name }}
+          upload_artifact: ${{ inputs.operation == 'plan' && 'true' || 'false' }}
+
+      - name: Terraform Apply
+        if: ${{ inputs.operation == 'apply' }}
+        uses: NikolaiKleppe/common-solutions/.github/actions/terraform-apply@${{ steps.getref.outputs.ref }}
+        with:
+          terraform_working_directory: ${{ inputs.terraform_working_directory }}
+          plan_file_name: ${{ inputs.plan_file_name }}
+          plan_artifact_name: ${{ inputs.plan_artifact_name }}
