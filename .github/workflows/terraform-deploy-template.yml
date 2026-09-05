@@ -135,22 +135,36 @@ jobs:
           plan_file_name: ${{ env.PLAN_FILE_NAME }}
           plan_artifact_name: ${{ inputs.plan_artifact_name }}
 
-      - name: Render plan summary for PR comment
-        id: render
-        if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
-        uses: $/.github/actions/terraform-plan-render-summary
-        with:
-          terraform_working_directory: ${{ inputs.terraform_working_directory }}
-          plan_file_name: ${{ env.PLAN_FILE_NAME }}
+      # - name: Render plan summary for PR comment
+      #   id: render
+      #   if: steps.plan.outcome == 'success'
+      #   uses: $/.github/actions/terraform-plan-render-summary
+      #   with:
+      #     terraform_working_directory: ${{ inputs.terraform_working_directory }}
+      #     plan_file_name: ${{ env.PLAN_FILE_NAME }}
 
-      - name: Comment plan output on PR
-        if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
-        uses: $/.github/actions/terraform-plan-pr-comment
-        with:
-          github_token: ${{ github.token }}
-          plan_output: ${{ steps.render.outputs.plan_summary }}
-          working_directory: ${{ inputs.terraform_working_directory }}
-          comment_identifier: ${{ inputs.plan_artifact_name }}
+      - name: Add plan output to job summary
+        if: steps.render.outcome == 'success'
+        shell: bash
+        env:
+          PLAN_SUMMARY: ${{ steps.render.outputs.plan_summary }}
+        run: |
+          {
+            echo "## Terraform Plan"
+            echo
+            echo '```text'
+            printf '%s\n' "$PLAN_SUMMARY"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # - name: Comment plan output on PR
+      #   if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
+      #   uses: $/.github/actions/terraform-plan-pr-comment
+      #   with:
+      #     github_token: ${{ github.token }}
+      #     plan_output: ${{ steps.render.outputs.plan_summary }}
+      #     working_directory: ${{ inputs.terraform_working_directory }}
+      #     comment_identifier: ${{ inputs.plan_artifact_name }}
 
   apply:
     needs: plan
