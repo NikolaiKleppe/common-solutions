@@ -4,18 +4,20 @@ This directory provides reusable workflow templates for Terraform plan/apply wit
 
 ## Templates
 
-- `terraform-deploy-template.yml`: Main reusable workflow that orchestrates init, plan, and optional apply.
-- `terraform-plan.yml`: Child reusable workflow for Terraform plan.
-- `terraform-apply.yml`: Child reusable workflow for Terraform apply.
+- `terraform-deploy-template.yml`: Single reusable workflow with two jobs, `plan` and `apply`. The `apply` job needs `plan` and only runs when `run_apply` is true and the plan reported changes.
 
-## Shared Action
+## Actions
 
-- `.github/actions/terraform-init/action.yml`: Shared action used by child reusable workflows to run checkout, Azure OIDC login, Terraform setup, and `terraform init` with explicit `-backend-config` flags.
+All steps that repeat across jobs are extracted into composite actions under `.github/actions/`, referenced with the `$/` self-reference syntax (resolves to this repository at the running commit, no checkout required):
 
-## Plan Summary Action
+- `.github/actions/azure-login/action.yml`: Azure OIDC login, with or without an explicit subscription.
+- `.github/actions/terraform-init/action.yml`: Azure login (via the action above) + Terraform setup + `terraform init` with explicit `-backend-config` flags.
+- `.github/actions/terraform-plan/action.yml`: Runs `terraform plan`, exposes `has_changes`, and uploads the plan artifact.
+- `.github/actions/terraform-apply/action.yml`: Downloads the plan artifact and runs `terraform apply`.
+- `.github/actions/terraform-plan-render-summary/action.yml`: Converts a Terraform binary plan into a one-line add/change/destroy summary. See its README for inputs/outputs/usage.
+- `.github/actions/terraform-plan-pr-comment/action.yml`: Posts/refreshes the plan summary as a PR comment.
 
-- `.github/actions/terraform-plan-render-summary/action.yml`: Reusable action that converts a Terraform binary plan into one-line add/change/destroy summary output for PR comments and logs.
-- See `.github/actions/terraform-plan-render-summary/README.md` for inputs, outputs, and usage examples.
+Note: the `$/` syntax requires GitHub Actions runner 2.336.0 or newer.
 
 ## OIDC Requirements
 
@@ -49,11 +51,11 @@ Optional inputs:
 - `backend_subscription_id` (default: empty)
 - `run_apply` (default: `false`)
 
-`run_apply` controls whether the apply child reusable workflow runs. By default, only init and plan execute.
+`run_apply` controls whether the `apply` job runs. By default, only the `plan` job executes.
 
 ## Terraform Init Backend Flags
 
-The shared init action always executes Terraform init with backend config flags:
+The `terraform-init` action always executes Terraform init with backend config flags:
 
 - `-backend-config="resource_group_name=..."`
 - `-backend-config="storage_account_name=..."`
