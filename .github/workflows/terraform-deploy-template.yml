@@ -91,50 +91,90 @@ on:
 
 jobs:
   plan:
-    #name: Plan Component
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
       pull-requests: write
-    uses: ./.github/workflows/terraform-plan.yml
-    with:
-      terraform_working_directory: ${{ inputs.terraform_working_directory }}
-      terraform_version: ${{ inputs.terraform_version }}
-      tfvars_file: ${{ inputs.tfvars_file }}
-      plan_file_name: ${{ inputs.plan_file_name }}
-      plan_artifact_name: ${{ inputs.plan_artifact_name }}
-      azure_subscription_id: ${{ inputs.azure_subscription_id }}
-      backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
-      backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
-      backend_subscription_id: ${{ inputs.backend_subscription_id }}
-      backend_container_name: ${{ inputs.backend_container_name }}
-      backend_key: ${{ inputs.backend_key }}
-    secrets:
-      azure_client_id: ${{ secrets.azure_client_id }}
-      azure_tenant_id: ${{ secrets.azure_tenant_id }}
+    # Suffixed with the run ID so reruns don't collide on the same artifact/plan file.
+    env:
+      PLAN_FILE_NAME: "${{ inputs.plan_file_name }}-${{ github.run_id }}"
+    outputs:
+      has_changes: ${{ steps.plan.outputs.has_changes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Terraform Init
+        uses: $/.github/actions/terraform-init
+        with:
+          terraform_working_directory: ${{ inputs.terraform_working_directory }}
+          terraform_version: ${{ inputs.terraform_version }}
+          azure_client_id: ${{ secrets.azure_client_id }}
+          azure_tenant_id: ${{ secrets.azure_tenant_id }}
+          azure_subscription_id: ${{ inputs.azure_subscription_id }}
+          backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
+          backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
+          backend_subscription_id: ${{ inputs.backend_subscription_id }}
+          backend_container_name: ${{ inputs.backend_container_name }}
+          backend_key: ${{ inputs.backend_key }}
+
+      - name: Terraform Plan
+        id: plan
+        uses: $/.github/actions/terraform-plan
+        with:
+          terraform_working_directory: ${{ inputs.terraform_working_directory }}
+          tfvars_file: ${{ inputs.tfvars_file }}
+          plan_file_name: ${{ env.PLAN_FILE_NAME }}
+          plan_artifact_name: ${{ inputs.plan_artifact_name }}
+
+      - name: Render plan summary for PR comment
+        id: render
+        if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
+        uses: $/.github/actions/terraform-plan-render-summary
+        with:
+          terraform_working_directory: ${{ inputs.terraform_working_directory }}
+          plan_file_name: ${{ env.PLAN_FILE_NAME }}
+
+      - name: Comment plan output on PR
+        if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
+        uses: $/.github/actions/terraform-plan-pr-comment
+        with:
+          github_token: ${{ github.token }}
+          plan_output: ${{ steps.render.outputs.plan_summary }}
+          working_directory: ${{ inputs.terraform_working_directory }}
 
   apply:
-    #name: Apply Component
     needs: plan
-    if: ${{ inputs.run_apply }}
+    if: ${{ inputs.run_apply && needs.plan.outputs.has_changes == 'true' }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.apply_environment_name }}
     permissions:
       contents: read
       id-token: write
-    uses: ./.github/workflows/terraform-apply.yml
-    with:
-      terraform_working_directory: ${{ inputs.terraform_working_directory }}
-      terraform_version: ${{ inputs.terraform_version }}
-      tfvars_file: ${{ inputs.tfvars_file }}
-      plan_file_name: ${{ inputs.plan_file_name }}
-      plan_artifact_name: ${{ inputs.plan_artifact_name }}
-      apply_environment_name: ${{ inputs.apply_environment_name }}
-      azure_subscription_id: ${{ inputs.azure_subscription_id }}
-      backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
-      backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
-      backend_subscription_id: ${{ inputs.backend_subscription_id }}
-      backend_container_name: ${{ inputs.backend_container_name }}
-      backend_key: ${{ inputs.backend_key }}
+    env:
+      PLAN_FILE_NAME: "${{ inputs.plan_file_name }}-${{ github.run_id }}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    secrets:
-      azure_client_id: ${{ secrets.azure_client_id }}
-      azure_tenant_id: ${{ secrets.azure_tenant_id }}
+      - name: Terraform Init
+        uses: $/.github/actions/terraform-init
+        with:
+          terraform_working_directory: ${{ inputs.terraform_working_directory }}
+          terraform_version: ${{ inputs.terraform_version }}
+          azure_client_id: ${{ secrets.azure_client_id }}
+          azure_tenant_id: ${{ secrets.azure_tenant_id }}
+          azure_subscription_id: ${{ inputs.azure_subscription_id }}
+          backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
+          backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
+          backend_subscription_id: ${{ inputs.backend_subscription_id }}
+          backend_container_name: ${{ inputs.backend_container_name }}
+          backend_key: ${{ inputs.backend_key }}
+
+      - name: Terraform Apply
+        uses: $/.github/actions/terraform-apply
+        with:
+          terraform_working_directory: ${{ inputs.terraform_working_directory }}
+          plan_file_name: ${{ env.PLAN_FILE_NAME }}
+          plan_artifact_name: ${{ inputs.plan_artifact_name }}
