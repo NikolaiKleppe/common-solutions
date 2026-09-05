@@ -109,7 +109,7 @@ jobs:
       has_changes: ${{ steps.plan.outputs.has_changes }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Terraform Init
         uses: $/.github/actions/terraform-init
@@ -164,7 +164,7 @@ jobs:
       PLAN_FILE_NAME: "${{ inputs.plan_file_name }}-${{ github.run_id }}"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Terraform Init
         uses: $/.github/actions/terraform-init
