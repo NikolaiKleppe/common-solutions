@@ -25,6 +25,12 @@ on:
         default: ""
         type: string
 
+      terraform_variables:
+        description: Optional additional Terraform variables (e.g. 'resource_name=res1')
+        required: false
+        default: ""
+        type: string
+
       plan_file_name:
         description: Terraform plan filename written in terraform_working_directory
         required: false
@@ -147,6 +153,16 @@ jobs:
           tfvars_arg=()
           if [ -n "${{ inputs.tfvars_file }}" ]; then
             tfvars_arg+=("-var-file=${{ inputs.tfvars_file }}")
+          fi
+
+          if [ -n "${{ inputs.terraform_variables }}" ]; then
+            for var_item in ${{ inputs.terraform_variables }}; do
+              if [[ "$var_item" == -var* ]]; then
+                tfvars_arg+=("$var_item")
+              else
+                tfvars_arg+=("-var=$var_item")
+              fi
+            done
           fi
 
           set +e
@@ -273,13 +289,15 @@ jobs:
         env:
           PLAN_OUTPUT: ${{ steps.show_plan.outputs.plan_summary }}
           WORKING_DIRECTORY: ${{ inputs.terraform_working_directory }}
+          PLAN_ARTIFACT_NAME: ${{ inputs.plan_artifact_name }}
         with:
           github-token: ${{ github.token }}
           script: |
-            const workingDir  = process.env.WORKING_DIRECTORY || '';
-            const marker      = `<!-- terraform-plan-pr-comment:${workingDir ? ':' + workingDir : ''} -->`;
-            const heading     = '## 🔍 Terraform Plan Operations';
-            const maxLength   = 65000;
+            const workingDir   = process.env.WORKING_DIRECTORY || '';
+            const artifactName = process.env.PLAN_ARTIFACT_NAME || '';
+            const marker       = `<!-- terraform-plan-pr-comment:${workingDir ? ':' + workingDir : ''}${artifactName ? ':' + artifactName : ''} -->`;
+            const heading      = '## 🔍 Terraform Plan Operations';
+            const maxLength    = 65000;
 
             let planText = process.env.PLAN_OUTPUT || '(no plan output captured)';
             const truncated = planText.length > maxLength;
