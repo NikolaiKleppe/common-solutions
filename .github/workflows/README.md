@@ -4,7 +4,7 @@ This directory provides reusable workflow templates for Terraform plan/apply wit
 
 ## Templates
 
-- `terraform-deploy-template.yml`: Single reusable workflow with two jobs, `plan` and `apply`. The `apply` job needs `plan` and only runs when `run_apply` is true and the plan reported changes.
+- `terraform-deploy-template.yml`: Single reusable workflow with two jobs, `plan` and `apply`. The `apply` job runs when `run_apply` is true and the plan succeeds. Applying a no-change plan is a harmless Terraform no-op.
 
 ## Actions
 
