@@ -19,6 +19,12 @@ inputs:
     default: ""
     type: string
 
+  terraform_variables:
+    description: Optional space-separated Terraform variables in key=value form
+    required: false
+    default: ""
+    type: string
+
   plan_artifact_name:
     description: Artifact name used to store the Terraform plan
     required: true
@@ -30,6 +36,8 @@ runs:
   - name: Terraform Plan
     id: plan
     shell: bash
+    env:
+      TERRAFORM_VARIABLES: ${{ inputs.terraform_variables }}
     run: |
       set -euo pipefail
 
@@ -38,6 +46,13 @@ runs:
       tfvars_arg=()
       if [ -n "${{ inputs.tfvars_file }}" ]; then
         tfvars_arg+=("-var-file=${{ inputs.tfvars_file }}")
+      fi
+
+      if [ -n "${TERRAFORM_VARIABLES}" ]; then
+        read -r -a terraform_variables <<< "${TERRAFORM_VARIABLES}"
+        for terraform_variable in "${terraform_variables[@]}"; do
+          tfvars_arg+=("-var=${terraform_variable}")
+        done
       fi
 
       set +e

@@ -38,6 +38,11 @@ inputs:
     required: false
     default: ""
 
+  comment_identifier:
+    description: Optional identifier used to keep concurrent matrix comments separate.
+    required: false
+    default: ""
+
 runs:
   using: composite
   steps:
@@ -47,11 +52,13 @@ runs:
         # Pass potentially large multi-line text via env to avoid shell quoting issues.
         PLAN_OUTPUT: ${{ inputs.plan_output }}
         WORKING_DIRECTORY: ${{ inputs.working_directory }}
+        COMMENT_IDENTIFIER: ${{ inputs.comment_identifier }}
       with:
         github-token: ${{ inputs.github_token }}
         script: |
           const workingDir  = process.env.WORKING_DIRECTORY || '';
-          const marker      = `<!-- terraform-plan-pr-comment:${workingDir ? ':' + workingDir : ''} -->`;
+          const identifier  = process.env.COMMENT_IDENTIFIER || '';
+          const marker      = `<!-- terraform-plan-pr-comment:${workingDir ? ':' + workingDir : ''}${identifier ? ':' + identifier : ''} -->`;
           const heading     = '## 🔍 Terraform Plan Operations';
           const maxLength   = 65000;
 
