@@ -30,6 +30,11 @@ inputs:
     required: true
     type: string
 
+outputs:
+  has_changes:
+    description: True when Terraform plan reports changes
+    value: ${{ steps.plan.outputs.has_changes }}
+
 runs:
   using: composite
   steps:
