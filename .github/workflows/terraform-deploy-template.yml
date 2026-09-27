@@ -95,6 +95,10 @@ on:
         description: Azure tenant ID
         required: true
 
+      github_token:
+        description: Optional GitHub token for Terraform-managed repository settings
+        required: false
+
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -128,6 +132,12 @@ jobs:
       - name: Terraform Plan
         id: plan
         uses: $/.github/actions/terraform-plan
+        env:
+          TF_VAR_github_token: ${{ secrets.github_token }}
+          TF_VAR_backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
+          TF_VAR_backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
+          TF_VAR_backend_container_name: ${{ inputs.backend_container_name }}
+          TF_VAR_backend_subscription_id: ${{ inputs.backend_subscription_id }}
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           tfvars_file: ${{ inputs.tfvars_file }}
@@ -179,6 +189,12 @@ jobs:
 
       - name: Terraform Apply
         uses: $/.github/actions/terraform-apply
+        env:
+          TF_VAR_github_token: ${{ secrets.github_token }}
+          TF_VAR_backend_resource_group_name: ${{ inputs.backend_resource_group_name }}
+          TF_VAR_backend_storage_account_name: ${{ inputs.backend_storage_account_name }}
+          TF_VAR_backend_container_name: ${{ inputs.backend_container_name }}
+          TF_VAR_backend_subscription_id: ${{ inputs.backend_subscription_id }}
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           plan_file_name: ${{ env.PLAN_FILE_NAME }}
