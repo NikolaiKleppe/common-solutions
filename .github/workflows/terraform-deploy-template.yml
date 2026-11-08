@@ -150,7 +150,6 @@ jobs:
             echo
             echo '```terraform'
             terraform -chdir="${{ inputs.terraform_working_directory }}" show \
-              -no-color \
               "${{ env.PLAN_FILE_NAME }}"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
