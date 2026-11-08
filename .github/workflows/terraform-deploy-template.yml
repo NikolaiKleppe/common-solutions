@@ -95,7 +95,7 @@ on:
         description: Azure tenant ID
         required: true
 
-      github_token:
+      terraform_github_token:
         description: Optional GitHub token for Terraform-managed repository settings
         required: false
 
@@ -133,7 +133,7 @@ jobs:
         id: plan
         uses: $/.github/actions/terraform-plan
         env:
-          TF_VAR_github_token: ${{ secrets.github_token }}
+          TF_VAR_github_token: ${{ secrets.terraform_github_token }}
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           tfvars_file: ${{ inputs.tfvars_file }}
@@ -186,7 +186,7 @@ jobs:
       - name: Terraform Apply
         uses: $/.github/actions/terraform-apply
         env:
-          TF_VAR_github_token: ${{ secrets.github_token }}
+          TF_VAR_github_token: ${{ secrets.terraform_github_token }}
         with:
           terraform_working_directory: ${{ inputs.terraform_working_directory }}
           plan_file_name: ${{ env.PLAN_FILE_NAME }}

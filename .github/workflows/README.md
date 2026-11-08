@@ -28,6 +28,21 @@ Consumer repositories must provide the following reusable workflow secrets:
 
 The Azure identity behind `azure_client_id` must have a federated credential for GitHub Actions and sufficient RBAC permissions at the target scope.
 
+For Terraform configurations that manage GitHub repository settings, callers can optionally
+pass `terraform_github_token`. The workflow exposes it to both plan and apply as the
+Terraform variable `github_token`:
+
+```yaml
+secrets:
+  azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+  azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+  terraform_github_token: ${{ secrets.TERRAFORM_GITHUB_TOKEN }}
+```
+
+`TERRAFORM_GITHUB_TOKEN` must be configured in the calling repository with the permissions
+needed by its Terraform configuration. Callers must use `terraform_github_token`, not
+the reserved `github_token` name, when mapping this secret.
+
 Caller workflows must grant these job permissions when invoking the reusable workflow:
 
 - `contents: read`
